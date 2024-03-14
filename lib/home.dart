@@ -5,14 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
-class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+class ChatPage extends StatefulWidget {
+  const ChatPage({super.key});
 
   @override
-  State<Homepage> createState() => _HomepageState();
+  State<ChatPage> createState() => _ChatPageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class _ChatPageState extends State<ChatPage> {
   GlobalKey<AnimatedListState> _animListKey = GlobalKey<AnimatedListState>();
   TextEditingController _textEditingController = TextEditingController();
 
