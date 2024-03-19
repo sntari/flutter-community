@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chatapp/chatmessage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  const ChatPage({Key? key}) : super(key: key);
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -22,8 +23,8 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat App'),
-        backgroundColor: Colors.amber,
+        title: Text('대화방', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.blue,
       ),
       body: Column(
         children: [
@@ -47,7 +48,7 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 TextButton(onPressed: () {
                   _handleSubmitted(_textEditingController.text);
-                }, child: Text('Send'), style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.amber)),),
+                }, child: Text('Send', style: TextStyle(color: Colors.white)), style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.blue)),),
               ],
             ),
           ),

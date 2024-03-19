@@ -1,10 +1,11 @@
 import 'package:chatapp/home.dart';
 import 'package:chatapp/intro.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:chatapp/login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-void main(){
+void main() async{
   runApp(MyApp());
 }
 
@@ -50,19 +51,16 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('중장년 커뮤니티'),
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0), // Adjust the padding as needed
-              child: Icon(Icons.add_alert),
-            ),
+            Text('커뮤니티', style: TextStyle(color: Colors.white)),
+            Icon(Icons.notifications, color: Colors.white),
           ],
         ),
-        backgroundColor: Colors.amber,
       ),
-      body: Column(
+      body : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -72,17 +70,15 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 TextButton(
                   onPressed: () {
-                    // '공지사항' 버튼을 누를 때 선택된 레이블을 업데이트
                     setSelectedLabel('공지사항');
                   },
-                  child: Text('공지사항'),
+                  child: Text('공지사항', style: TextStyle(color: Colors.blue)),
                 ),
                 TextButton(
                   onPressed: () {
-                    // '인기글' 버튼을 누를 때 선택된 레이블을 업데이트
                     setSelectedLabel('인기글');
                   },
-                  child: Text('인기글'),
+                  child: Text('인기글', style: TextStyle(color: Colors.blue)),
                 ),
                 PopupMenuButton<String>(
                   initialValue: labels[0],
@@ -95,7 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     }).toList();
                   },
                   onSelected: (String? newValue) {
-                    // 선택된 레이블을 변경하는 함수 호출
                     setSelectedLabel(newValue!);
                   },
                 ),
@@ -121,8 +116,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                     padding: EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(10.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

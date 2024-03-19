@@ -1,3 +1,4 @@
+import 'package:chatapp/signup.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
@@ -16,13 +17,15 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.amber,
-        title: Text(isLoggedIn ? '정보 수정' : '로그인'),
+        backgroundColor: Colors.blue,
+        title: Text(isLoggedIn ? '정보 수정' : '로그인', style: TextStyle(color: Colors.white)),
         actions: [
           if (!isLoggedIn)
             TextButton(
               onPressed: () {
-                // Navigate to the registration screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignUp()),);
               },
               child: Text(
                 '회원가입',

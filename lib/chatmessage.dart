@@ -21,7 +21,7 @@ class ChatMessage extends StatelessWidget {
           child: Row(
             children: [
               CircleAvatar(
-                backgroundColor: Colors.amber,
+                backgroundColor: Colors.blue,
                 child: Text("N"),
               ),
               SizedBox(width: 16,),

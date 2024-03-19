@@ -35,10 +35,10 @@ class _IntroScreenState extends State<IntroScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.amber,
+      backgroundColor: Colors.blue,
       body: Center(
         child: Text(
-          'Mungungdeng Community',
+          'Community',
           style: TextStyle(
             fontSize: 40,
             color: Colors.white,
