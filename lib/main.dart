@@ -5,7 +5,19 @@ import 'package:chatapp/login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-void main() async{
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+        apiKey: "AIzaSyDvs_UqGL_Pd6lROCuAVzlWF2y5-J4mdNg",
+        authDomain: "chatappdemo-928ba.firebaseapp.com",
+        projectId: "chatappdemo-928ba",
+        storageBucket: "chatappdemo-928ba.appspot.com",
+        messagingSenderId: "321294404660",
+        appId: "1:321294404660:web:365ea6afecb174fb890e61",
+        measurementId: "G-LJYDTQ6BBJ"
+    ),
+  );
   runApp(MyApp());
 }
 
