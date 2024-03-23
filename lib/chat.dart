@@ -1,7 +1,3 @@
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:chatapp/chatmessage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -66,5 +62,46 @@ class _ChatPageState extends State<ChatPage> {
     _textEditingController.clear();
     _chats.insert(0, text);
     _animListKey.currentState?.insertItem(0);
+  }
+}
+// 이 아래론 채팅 메세지에 관련된 애니메이션 및 디자인
+class ChatMessage extends StatelessWidget {
+  final String txt;
+  final Animation<double> animation;
+
+  const ChatMessage(this.txt, {
+    required this.animation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: FadeTransition(
+        opacity: animation,
+        child: SizeTransition(
+          axisAlignment: -1.0,
+          sizeFactor: animation,
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: Colors.blue,
+                child: Text("N"),
+              ),
+              SizedBox(width: 16,),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("id or name", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(txt),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:chatapp/signup.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -12,6 +13,8 @@ class _LoginState extends State<Login> {
   bool isLoggedIn = false; // Track login state
   TextEditingController idController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
 
   @override
@@ -63,11 +66,23 @@ class _LoginState extends State<Login> {
         ),
         SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {
-            // Perform login action (dummy implementation)
-            setState(() {
-              isLoggedIn = true;
-            });
+          onPressed: () async {
+            // Perform login action
+            try {
+              UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+                email: idController.text.trim(),
+                password: passwordController.text.trim(),
+              );
+              setState(() {
+                isLoggedIn = true;
+              });
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('로그인 실패'),
+                ),
+              );
+            }
           },
           child: Text('Login'),
         ),
@@ -85,8 +100,8 @@ class _LoginState extends State<Login> {
         ),
         SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {
-            // Perform logout action
+          onPressed: () async {
+            await _auth.signOut();
             setState(() {
               isLoggedIn = false;
             });

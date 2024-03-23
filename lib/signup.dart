@@ -21,6 +21,26 @@ class _SignUpState extends State<SignUp> {
 
   Future<void> _signUpWithEmailAndPassword() async {
     try {
+
+      String password = passwordController.text.trim();
+      RegExp upperCase = RegExp(r'[A-Z]');
+      RegExp lowerCase = RegExp(r'[a-z]');
+      RegExp digit = RegExp(r'[0-9]');
+      RegExp specialChar = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
+
+      if (!upperCase.hasMatch(password) ||
+          !lowerCase.hasMatch(password) ||
+          !digit.hasMatch(password) ||
+          !specialChar.hasMatch(password)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                '비밀번호는 영어 대문자, 소문자, 특수문자, 숫자를 모두 포함해야 합니다.'),
+          ),
+        );
+        return; // Stop signup process if password validation fails
+      }
+
      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: idController.text.trim(),
         password: passwordController.text.trim(),
@@ -38,6 +58,7 @@ class _SignUpState extends State<SignUp> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('회원가입 성공')),
         );
+        Navigator.pop(context);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
