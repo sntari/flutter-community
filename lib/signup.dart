@@ -13,6 +13,7 @@ class _SignUpState extends State<SignUp> {
   TextEditingController idController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController nicknameController = TextEditingController();
 
   bool isIdAvailable = true; // Track whether the entered ID is available
 
@@ -53,6 +54,7 @@ class _SignUpState extends State<SignUp> {
         await _memberCollection.doc(uid).set({
           'email': idController.text.trim(),
           'password': passwordController.text.trim(),
+          'nickname': nicknameController.text.trim(),
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -141,6 +143,14 @@ class _SignUpState extends State<SignUp> {
                 }
               },
               child: Text('중복 확인'),
+            ),
+            SizedBox(height: 10),
+            TextField(
+              controller: nicknameController,
+              decoration: InputDecoration(
+                labelText: 'Nickname', // Added
+                border: OutlineInputBorder(),
+              ),
             ),
             SizedBox(height: 10),
             TextField(

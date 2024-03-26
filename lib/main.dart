@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:chatapp/chat.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:chatapp/login.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
