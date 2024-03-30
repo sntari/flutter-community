@@ -1,8 +1,74 @@
 import 'dart:async';
 import 'package:chatapp/chat.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:chatapp/login.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class UserProvider extends ChangeNotifier {
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  User? _user;
+  String? nickname;
+
+  User? get user => _user;
+
+  // 유저 로그인 데이터 체크
+  User? checkCurrentUser() {
+    _user = _auth.currentUser;
+    notifyListeners();
+    return _user;
+  }
+
+  // 파이어스토어 데이터 패치
+   Future<void> fetchUserData() async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+      await FirebaseFirestore.instance
+          .collection('member')
+          .doc(_user?.uid)
+          .get();
+
+      if (snapshot.exists) {
+        nickname = snapshot.data()?['nickname'];
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
+
+  // 로그인 정보 전송
+  Future<void> signInWithEmailAndPassword(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      _user = userCredential.user;
+      await fetchUserData(); // Fetch user data after successful login
+      notifyListeners(); // Notify listeners after successful login
+    } catch (e) {
+      print('Login failed: $e');
+      throw e;
+    }
+  }
+
+  // 로그아웃 정보 전송
+  Future<void> signOut() async {
+    try {
+      await _auth.signOut();
+      _user = null;
+      nickname = null;
+      // Schedule a callback after the frame has been built to notify listeners
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        notifyListeners();
+      });
+    } catch (e) {
+      print('Logout failed: $e');
+    }
+  }
+}
 
 
 void main() async {
@@ -18,7 +84,12 @@ void main() async {
         measurementId: "G-LJYDTQ6BBJ"
     ),
   );
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UserProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -106,6 +177,30 @@ class _MyHomePageState extends State<MyHomePage> {
     '정치게시판': ['글10', '글11', '글12'],
     '질문게시판': ['글13', '글14', '글15'],
   };
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      userProvider.checkCurrentUser();
+    });
+  }
+
+  void navigateToPage() {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (userProvider._user != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => InformationPage()),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Login()),
+      );
+    }
+  }
 
   // 선택된 레이블을 변경하는 함수
   void setSelectedLabel(String newLabel) {
@@ -230,11 +325,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.home_filled),
             ),
             IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Login()),);
-              },
+              onPressed: navigateToPage,
               icon: Icon(Icons.key),
             ),
             IconButton(

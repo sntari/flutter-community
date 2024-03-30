@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+
+import 'main.dart';
 
 class ChatPage extends StatefulWidget {
 
@@ -26,14 +27,18 @@ class _ChatPageState extends State<ChatPage> {
         title: Text('대화방', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blue,
       ),
-      body: Column(
-        children: [
-          Expanded(
-              child: AnimatedList(
-                reverse: true,
-                key: _animListKey,
-                itemBuilder: _buildTtem,
-              )),
+        body: Consumer<UserProvider>(
+            builder: (context, userProvider, _) {
+              return Column(
+                children: [
+                  Expanded(
+                    child: AnimatedList(
+                      reverse: true,
+                      key: _animListKey,
+                      itemBuilder: (context, index, animation) =>
+                          _buildItem(context, index, animation, userProvider.nickname),
+                    ),
+                  ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
@@ -55,13 +60,15 @@ class _ChatPageState extends State<ChatPage> {
               ],
             ),
           ),
-        ],
-      ),
+                ],
+              );
+            },
+        ),
     );
   }
 
-  Widget _buildTtem(context, index, animation){
-    return ChatMessage(_chats[index], animation: animation);
+  Widget _buildItem(context, index, animation, String? nickname) {
+    return ChatMessage(_chats[index], nickname: nickname, animation: animation);
   }
 
   void _handleSubmitted(String text){
@@ -76,10 +83,11 @@ class _ChatPageState extends State<ChatPage> {
 // 이 아래론 채팅 메세지에 관련된 애니메이션 및 디자인
 class ChatMessage extends StatelessWidget {
   final String txt;
+  final String? nickname;
   final Animation<double> animation;
 
   const ChatMessage(this.txt, {
-    required this.animation,
+    required this.animation, required this.nickname,
   });
 
   @override
@@ -95,14 +103,17 @@ class ChatMessage extends StatelessWidget {
             children: [
               CircleAvatar(
                 backgroundColor: Colors.blue,
-                child: Text("N"),
+                child: Text(nickname?[0] ?? "N"),
               ),
               SizedBox(width: 16,),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("id or name", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      nickname ?? "Unknown", // Display the nickname
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     Text(txt),
                   ],
                 ),

@@ -1,4 +1,6 @@
 import 'package:chatapp/signup.dart';
+import 'package:chatapp/main.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,58 +25,9 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController idController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // 객체와 값들을 담을 공간들
-  User? _user; // Firebase User 객체를 저장할 변수
-  bool isLoggedIn = false;
-  String? nickname;
-
-  // 다른 페이지에 갔다와도 로그인이 유지되게끔 위젯 실행시 체크
-  @override
-  void initState() {
-    super.initState();
-    _checkCurrentUser();
-  }
-
-  // 사용자의 로그인을 계속 유지할  수 있게 현재상태 체크
-  void _checkCurrentUser() {
-    _user = _auth.currentUser;
-    if (_user != null) {
-      setState(() {
-        isLoggedIn = true;
-        _fetchUserData();
-      });
-    } else {
-      setState(() {
-        isLoggedIn = false;
-      });
-    }
-  }
-
-  // auth가 아닌 데이터베이스의 값들을 가져옴
-  Future<void> _fetchUserData() async {
-    try {
-      // Get the user document from Firestore
-      DocumentSnapshot<Map<String, dynamic>> snapshot =
-      await FirebaseFirestore.instance.collection('member')
-          .doc(_user?.uid)
-          .get();
-
-      if (snapshot.exists) {
-        // Extract the nickname from the snapshot
-        setState(() {
-          nickname = snapshot.data()?['nickname'];
-        });
-      }
-    } catch (e) {
-      print('Error fetching user data: $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return isLoggedIn ? InformationPage() : Scaffold(
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Text('로그인', style: TextStyle(color: Colors.white)),
@@ -115,19 +68,17 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                // Perform login action
+                // Perform login action using Provider
                 try {
-                  UserCredential userCredential = await _auth
+                  await Provider.of<UserProvider>(context, listen: false)
                       .signInWithEmailAndPassword(
-                    email: idController.text.trim(),
-                    password: passwordController.text.trim(),
+                    idController.text.trim(),
+                    passwordController.text.trim(),
                   );
-                  if (userCredential.user != null) {
-                    setState(() {
-                      isLoggedIn = true;
-                      _checkCurrentUser(); // Call _checkCurrentUser after successful login
-                    });
-                  }
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => InformationPage()),
+                  );
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -143,46 +94,68 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+}
 
-  Widget InformationPage() {
+class InformationPage extends StatefulWidget {
+  @override
+  _InformationPageState createState() => _InformationPageState();
+}
+
+class _InformationPageState extends State<InformationPage> {
+
+  @override
+  Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Text('회원 정보', style: TextStyle(color: Colors.white)),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-               CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage('assets/ee.jpg'),
+      body: FutureBuilder<void>(
+        future: userProvider.fetchUserData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: AssetImage('assets/ee.jpg'),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    '닉네임: ${userProvider.nickname ?? 'Unknown'}',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Perform logout using Provider
+                      await userProvider.signOut();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => Login()),
+                      );
+                    },
+                    child: Text('Logout'),
+                  ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Navigate to the information modification screen
+                    },
+                    child: Text('Edit Information'),
+                  ),
+                ],
               ),
-            SizedBox(height: 20),
-            Text(
-              '닉네임: ${nickname ?? 'Unknown'}',
-              style: TextStyle(fontSize: 18),
-            ), // 사용자 UID 표시
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                await _auth.signOut();
-                setState(() {
-                  isLoggedIn = false;
-                });
-                _checkCurrentUser();
-              },
-              child: Text('Logout'),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the information modification screen
-              },
-              child: Text('Edit Information'),
-            ),
-          ],
-        ),
+            );
+          }
+        },
       ),
     );
   }
