@@ -1,9 +1,8 @@
-import 'dart:io';
 import 'package:chatapp/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class Login extends StatelessWidget {
   const Login({Key? key}) : super(key: key);
@@ -20,20 +19,25 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // 컨트롤러들
   TextEditingController idController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // 객체와 값들을 담을 공간들
   User? _user; // Firebase User 객체를 저장할 변수
   bool isLoggedIn = false;
   String? nickname;
 
+  // 다른 페이지에 갔다와도 로그인이 유지되게끔 위젯 실행시 체크
   @override
   void initState() {
     super.initState();
-    _checkCurrentUser(); // 앱 시작 시 현재 사용자 확인
+    _checkCurrentUser();
   }
 
+  // 사용자의 로그인을 계속 유지할  수 있게 현재상태 체크
   void _checkCurrentUser() {
     _user = _auth.currentUser;
     if (_user != null) {
@@ -48,11 +52,14 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // auth가 아닌 데이터베이스의 값들을 가져옴
   Future<void> _fetchUserData() async {
     try {
       // Get the user document from Firestore
       DocumentSnapshot<Map<String, dynamic>> snapshot =
-      await FirebaseFirestore.instance.collection('member').doc(_user?.uid).get();
+      await FirebaseFirestore.instance.collection('member')
+          .doc(_user?.uid)
+          .get();
 
       if (snapshot.exists) {
         // Extract the nickname from the snapshot
@@ -110,7 +117,8 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () async {
                 // Perform login action
                 try {
-                  UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+                  UserCredential userCredential = await _auth
+                      .signInWithEmailAndPassword(
                     email: idController.text.trim(),
                     password: passwordController.text.trim(),
                   );
@@ -146,10 +154,10 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage('assets/ee.jpg'), // Replace 'assets/profile_picture.png' with your image path
-            ),
+               CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage('assets/ee.jpg'),
+              ),
             SizedBox(height: 20),
             Text(
               '닉네임: ${nickname ?? 'Unknown'}',

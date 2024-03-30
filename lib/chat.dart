@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatPage extends StatefulWidget {
+
   const ChatPage({Key? key}) : super(key: key);
 
   @override
@@ -69,6 +72,7 @@ class _ChatPageState extends State<ChatPage> {
       _messageFocusNode.requestFocus();
   }
 }
+
 // 이 아래론 채팅 메세지에 관련된 애니메이션 및 디자인
 class ChatMessage extends StatelessWidget {
   final String txt;

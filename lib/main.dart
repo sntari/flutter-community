@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:chatapp/chat.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:chatapp/login.dart';
 import 'package:flutter/material.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: IntroScreen(),
     );
   }
@@ -97,9 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<String> labels = ['자유게시판','주식게시판','유머게시판','정치게시판','질문게시판'];
   String selectedLabel = '';
-  String noticeText = '';
-  String popularText = '';
-
   // 각 게시판에 대한 글 목록을 가정한 리스트
   Map<String, List<String>> posts = {
     '자유게시판': ['글1', '글2', '글3'],

@@ -55,6 +55,7 @@ class _SignUpState extends State<SignUp> {
           'email': idController.text.trim(),
           'password': passwordController.text.trim(),
           'nickname': nicknameController.text.trim(),
+          'imageurl': "",
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
