@@ -6,11 +6,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:chatapp/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 
 class UserProvider extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
   User? _user;
   String? nickname;
+
 
   User? get user => _user;
 
